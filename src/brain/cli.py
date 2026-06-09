@@ -1,0 +1,154 @@
+"""Brain CLI v2 — Main entry point with argparse."""
+
+from __future__ import annotations
+
+import argparse
+import sys
+
+from .errors import BrainError, InputError, APIError, BadResponseError, SUCCESS, API_FAILURE, BAD_RESPONSE, INPUT_ERROR
+from .commands import cmd_think, cmd_key, cmd_key_set, cmd_profiles, cmd_config, cmd_config_set
+from .keys import VALID_PROVIDERS
+from .profiles import VALID_PROFILES
+from .depth import VALID_DEPTHS
+
+DEFAULT_MAX_TOKENS = 16384
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """Build the argument parser."""
+    parser = argparse.ArgumentParser(
+        prog="brain",
+        description="Brain CLI v2 — Reasoning engine for agents",
+    )
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+
+    # ── think ──
+    think_parser = subparsers.add_parser("think", help="Send a prompt to the reasoning engine")
+    think_parser.add_argument("prompt", help="The prompt/question to think about")
+    think_parser.add_argument("--provider", choices=VALID_PROVIDERS,
+                              help="Provider: openrouter|opencode_go")
+    think_parser.add_argument("--model", "-m", default=None,
+                              help="Model ID (default: from config or provider default)")
+    think_parser.add_argument("--profile", "-p", choices=VALID_PROFILES,
+                              help="Reasoning profile: reasoning|critic|planner|judge|extractor")
+    think_parser.add_argument("--context", "-c", help="Inline context to include")
+    think_parser.add_argument("--context-file", "-f", help="File with context to include")
+    think_parser.add_argument("--stdin-context", "-s", action="store_true",
+                              help="Read context from stdin")
+    think_parser.add_argument("--metadata", "-M", action="append",
+                              help="Metadata key=value pairs (repeatable)")
+    think_parser.add_argument("--depth", "-d", choices=VALID_DEPTHS,
+                              help="Reasoning depth: quick|normal|deep|exhaustive")
+    think_parser.add_argument("--max-tokens", "-t", type=int, default=DEFAULT_MAX_TOKENS,
+                              help=f"Max output tokens (default: {DEFAULT_MAX_TOKENS})")
+    think_parser.add_argument("--temperature", type=float, help="Override temperature")
+    think_parser.add_argument("--raw", "-r", action="store_true",
+                              help="Raw mode: no system prompt, just user message")
+    think_parser.add_argument("--json", "-j", action="store_true",
+                              help="Strip code fences, output clean JSON")
+    think_parser.add_argument("--stats", action="store_true",
+                              help="Show usage statistics on stderr")
+
+    # ── key ──
+    subparsers.add_parser("key", help="Show key location or set a new key")
+
+    # ── key-set ──
+    keyset_parser = subparsers.add_parser("key-set", help="Save API key to profile .env")
+    keyset_parser.add_argument("key_value", help="The API key")
+
+    # ── profiles ──
+    subparsers.add_parser("profiles", help="List available reasoning profiles")
+
+    # ── config ──
+    subparsers.add_parser("config", help="Show current configuration")
+
+    # ── config-set ──
+    configset_parser = subparsers.add_parser("config-set", help="Set a config value")
+    configset_parser.add_argument("key", help="Config key: provider|model")
+    configset_parser.add_argument("value", help="Config value")
+
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Main entry point. Returns exit code."""
+    parser = build_parser()
+    args = parser.parse_args(argv)
+
+    # No command given
+    if not args.command:
+        parser.print_help()
+        return SUCCESS
+
+    try:
+        if args.command == "think":
+            cmd_think(
+                prompt=args.prompt,
+                model=args.model,
+                provider=args.provider,
+                profile=args.profile,
+                context=args.context,
+                context_file=args.context_file,
+                stdin_context=args.stdin_context,
+                metadata=args.metadata,
+                depth=args.depth,
+                max_tokens=args.max_tokens,
+                temperature=args.temperature,
+                raw=args.raw,
+                json_output=args.json,
+                show_stats=args.stats,
+            )
+            return SUCCESS
+
+        elif args.command == "key":
+            cmd_key()
+            return SUCCESS
+
+        elif args.command == "key-set":
+            cmd_key_set(args.key_value)
+            return SUCCESS
+
+        elif args.command == "profiles":
+            cmd_profiles()
+            return SUCCESS
+
+        elif args.command == "config":
+            cmd_config()
+            return SUCCESS
+
+        elif args.command == "config-set":
+            cmd_config_set(args.key, args.value)
+            return SUCCESS
+
+        else:
+            parser.print_help()
+            return INPUT_ERROR
+
+    except InputError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return INPUT_ERROR
+
+    except APIError as e:
+        print(f"API Error: {e}", file=sys.stderr)
+        return API_FAILURE
+
+    except BadResponseError as e:
+        print(f"Bad Response: {e}", file=sys.stderr)
+        return BAD_RESPONSE
+
+    except BrainError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+
+    except KeyboardInterrupt:
+        print("\nInterrupted.", file=sys.stderr)
+        return 130
+
+
+def cli_main():
+    """Entry point for console_scripts."""
+    sys.exit(main())
+
+
+if __name__ == "__main__":
+    cli_main()

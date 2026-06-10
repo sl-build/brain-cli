@@ -1,6 +1,6 @@
 """Tests for brain.stats module."""
 
-from brain.stats import Stats, COST_PER_1M_TOKENS
+from brain.stats import COST_PER_1M_TOKENS, Stats
 
 
 class TestStats:

@@ -1,7 +1,8 @@
 """Tests for brain.context module — context injection and message assembly."""
 
 import pytest
-from brain.context import build_context_block, assemble_messages
+
+from brain.context import assemble_messages, build_context_block
 
 
 class TestBuildContextBlock:

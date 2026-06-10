@@ -1,18 +1,15 @@
 """Tests for brain.profiles module."""
 
-import os
-from pathlib import Path
 
 import pytest
+
 from brain.profiles import (
     PROFILE_PROMPTS,
-    get_all_profiles,
-    get_valid_profile_names,
     add_profile,
-    remove_profile,
+    get_all_profiles,
     get_profile_details,
-    load_user_profiles,
-    save_user_profiles,
+    get_valid_profile_names,
+    remove_profile,
 )
 
 

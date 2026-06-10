@@ -1,8 +1,15 @@
 """Tests for brain.errors module."""
 
 from brain.errors import (
-    BrainError, APIError, BadResponseError, InputError, RetryableError,
-    SUCCESS, API_FAILURE, BAD_RESPONSE, INPUT_ERROR,
+    API_FAILURE,
+    BAD_RESPONSE,
+    INPUT_ERROR,
+    SUCCESS,
+    APIError,
+    BadResponseError,
+    BrainError,
+    InputError,
+    RetryableError,
 )
 
 

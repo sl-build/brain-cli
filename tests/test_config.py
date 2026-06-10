@@ -1,6 +1,7 @@
 """Tests for brain.config module."""
 
 import pytest
+
 from brain.config import load_config, save_config
 
 

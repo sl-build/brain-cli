@@ -1,7 +1,8 @@
 """Tests for brain.depth module."""
 
 import pytest
-from brain.depth import DEPTH_CONFIGS, VALID_DEPTHS, get_depth_config, merge_depth_into_params
+
+from brain.depth import VALID_DEPTHS, get_depth_config, merge_depth_into_params
 
 
 class TestDepthConfigs:

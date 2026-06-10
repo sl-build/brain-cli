@@ -3,7 +3,8 @@
 import json
 
 import pytest
-from brain.structured import strip_code_fences, build_json_output, validate_json_output
+
+from brain.structured import build_json_output, strip_code_fences, validate_json_output
 
 
 class TestStripCodeFences:

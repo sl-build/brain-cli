@@ -89,6 +89,7 @@ def call_and_print(
     raw: bool = False,
     json_output: bool = False,
     show_stats: bool = False,
+    suppress_print: bool = False,
     retries: int = 3,
     raw_model: bool = False,
 ) -> str:
@@ -153,11 +154,12 @@ def call_and_print(
                 cost_usd=None,
                 latency_ms=None,
             )
-        print(output)
-    else:
+        if not suppress_print:
+            print(output)
+    elif not suppress_print:
         print(response_text)
 
-    if show_stats and not json_output:
+    if show_stats and not json_output and not suppress_print:
         stats.report(to_stderr=True)
 
     if json_output and output is not None:

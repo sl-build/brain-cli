@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import sys
 
 from .client import call_and_print
 from .config import get_default_model as get_config_model
@@ -107,6 +106,7 @@ def cmd_think(
         json_output=effective_json,
         show_stats=show_stats,
         raw_model=raw_model,
+        suppress_print=plan_mode,
     )
 
     if plan_mode:
@@ -119,13 +119,13 @@ def cmd_think(
         steps = _parse_plan_json(response)
         plan = create_plan(prompt, steps)
         save_plan(plan)
-        print("\n--- Plan saved ---", file=sys.stderr)
+        print("\n--- Plan saved ---")
         _print_plan(plan)
     elif force:
         delete_plan()
         plan = create_plan(prompt, [response.strip()])
         save_plan(plan)
-        print("\n--- Plan overwritten (force) ---", file=sys.stderr)
+        print("\n--- Plan overwritten (force) ---")
         _print_plan(plan)
 
     return response
@@ -133,13 +133,13 @@ def cmd_think(
 
 def _print_plan(plan) -> None:
     status_icons = {"pending": "○", "in_progress": "●", "done": "✔", "blocked": "✗"}
-    print(f"\nPlan: {plan.prompt}", file=sys.stderr)
+    print(f"\nPlan: {plan.prompt}")
     for i, step in enumerate(plan.steps):
         icon = status_icons.get(step.status, "?")
         marker = " ←" if i == plan.current_step else ""
-        print(f"  {icon} {step.title}{marker}", file=sys.stderr)
+        print(f"  {icon} {step.title}{marker}")
     if plan.current_step >= len(plan.steps):
-        print("  ✓ All steps complete", file=sys.stderr)
+        print("  ✓ All steps complete")
 
 
 def cmd_plan() -> str:

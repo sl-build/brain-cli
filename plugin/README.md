@@ -1,29 +1,29 @@
 # Brain Hermes Plugin (optional, experimental)
 
-> **Версия:** соответствует brain-cli (сейчас v0.2.0)
-> **Не входит в pip-пакет brain.** Устанавливается отдельно через Hermes Agent.
+> **Version:** matches brain-cli (currently v0.2.0)
+> **Not included in the brain pip package.** Installed separately via Hermes Agent.
 
-## Установка
+## Installation
 
 ```bash
-Скопировать plugin.yaml в skills Hermes-агента
+Copy plugin.yaml to the Hermes agent skills directory
 cp plugin/brain-tool/plugin.yaml ~/.hermes/skills/
 ```
 
-## Инструменты плагина
+## Plugin tools
 
-| Инструмент | Назначение |
+| Tool | Purpose |
 |-----------|------------|
-| `brain_think` | Выполнить reasoning через Brain CLI |
-| `brain_config` | Управление конфигурацией |
+| `brain_think` | Run reasoning via Brain CLI |
+| `brain_config` | Manage configuration |
 | `brain_plan` | Plan management (show/mark/block) |
-| `brain_plan_status` | Статус Brain Gate |
+| `brain_plan_status` | Brain Gate status |
 
 ## Brain Gate
 
-Gate — защита от циклических вызовов. Блокирует brain think, если сам brain вызвал агента, который вызвал brain. См. `brain plan --block` / `--mark-done`.
+Gate protects against cyclic calls. It blocks `brain think` if brain itself called an agent that called brain. See `brain plan --block` / `--mark-done`.
 
-## Зависимости
+## Dependencies
 
 - brain CLI v0.2.0+ (`pip install brain`)
 - Hermes Agent
